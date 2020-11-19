@@ -5,6 +5,8 @@ int main(int argc, char** argv) {
     cout << "ERROR: not a valid number of command line argumnets! " << endl;
   }else if(argc == 2){
     int realTime = 0;
+    int longestWait = 0;
+    int over10 = 0;
     bool simulation = true;
     //0 = false, 1 = true
     Registrar office;
@@ -12,10 +14,11 @@ int main(int argc, char** argv) {
     string filename = argv[1];
     office.parseFile(filename);
     //cout << office.allWindowsEmpty() << endl; //1 true , 0 false
+    //cout << "size of queue : " << office.myQueue->getSize() << endl;
 
   while(simulation){
     cout << "real time: " << realTime << endl;
-    cout << "Clock tick: " << office.clockTick << endl << "------- " << endl;
+    cout << "Clock tick: " << office.clockTick << endl;
     cout << "size of queue: " << office.myQueue->getSize() << endl;
 
     if(realTime >= office.clockTick){
@@ -27,8 +30,8 @@ int main(int argc, char** argv) {
         //reassign default students at window to students fro queue
           office.windowList[i]->currStudent = temp;
           office.windowList[i]->isOccupied = true;
+          office.waitTimesList->insertBack(temp->m_waitTime);
           office.myQueue->dequeue();
-
       }else if(office.windowList[i]->currStudent->m_timeNeeded > 0 ){
         office.windowList[i]->currStudent->decTime();
         if(office.windowList[i]->currStudent->m_timeNeeded == 0){
@@ -41,12 +44,20 @@ int main(int argc, char** argv) {
           //reassign default students at window to students fro queue
             office.windowList[i]->currStudent = temp2;
             office.windowList[i]->isOccupied = true;
+            office.waitTimesList->insertBack(temp2->m_waitTime);
             office.myQueue->dequeue();
         }
       }
       cout << "time needed at window: " << office.windowList[i]->currStudent->m_timeNeeded << endl;
+      office.updateWaitTime();
     }
+    //update wait time
 
+  }
+
+  if(office.allWindowsEmpty() && office.myQueue->isEmpty()){
+    simulation = false;
+    break;
   }
     //update idle times
     for(int i = 0; i < office.sizeOfWindowList(); ++i){
@@ -60,21 +71,18 @@ int main(int argc, char** argv) {
       }
       office.windowList[i]->printWindow();
     }
+    cout <<endl;
 
-    cout << "all windows empty: " << office.allWindowsEmpty() << endl;
-    cout << "queue is empty: " << office.myQueue->isEmpty() << endl;
-
-    if(office.allWindowsEmpty() && office.myQueue->isEmpty()){
-      simulation = false;
-      break;
-    }
+    // cout << "all windows empty: " << office.allWindowsEmpty() << endl;
+    // cout << "queue is empty: " << office.myQueue->isEmpty() << endl;
 
 
     realTime++;
   }
 
   cout << endl << endl;
-  cout << "Mean student wait time: " << endl;
+  office.waitTimesList->printList();
+  cout << "Mean student wait time: " << office.mean() << endl;
   cout << "Median student wait time: " << endl;
   cout << "Longest student wait time: " << endl;
   cout << "Number of students waiting over 10 minutes: " << endl;

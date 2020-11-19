@@ -193,7 +193,9 @@ bool DoublyLinkedList<T>::isEmpty(){
 template <typename T>
 void DoublyLinkedList<T>::printList(){
   ListNode<T> *curr = front;
-
+  if(curr == NULL){
+    cout << "list is empty" <<endl;
+  }
   while(curr != NULL){
     cout << curr->data << endl;
     curr = curr->next;
@@ -206,7 +208,7 @@ unsigned int DoublyLinkedList<T>::getSize(){
   return size;
 }
 
-//returns the object at a specified position in the linked list 
+//returns the object at a specified position in the linked list
 template <typename T>
 T* DoublyLinkedList<T>::get(int index){
   ListNode<T> *curr = front;

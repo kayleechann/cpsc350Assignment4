@@ -26,7 +26,9 @@ Assignment 4 <br/>
   - https://stackoverflow.com/questions/18186878/invalid-use-of-template-name-without-an-argument-list
 - Sorting an array
   - https://www.geeksforgeeks.org/sort-c-stl/
-- Referenced Rene's ListNode, DoublyLinkedList, and Queue implementation 
+- Finding the median of a sorted array
+  - https://github.com/kayleechann/cpsc350Assignment4
+- Referenced Rene's ListNode, DoublyLinkedList, and Queue implementation
 
 5. Instructions for running assignment:
 - g++ *.cpp

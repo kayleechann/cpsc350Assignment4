@@ -6,13 +6,11 @@
 //default constructor --> instantiate lists/arrays/queue
 Registrar::Registrar(){
   numWindowsOpen = 0;
-  myQueue = new GenQueue<Student*>();
   waitTimesList = new DoublyLinkedList<int>();
 }
 
 //destructor
 Registrar::~Registrar(){
-  delete myQueue;
   delete [] windowList;
   delete waitTimesList;
 }
@@ -22,50 +20,34 @@ bool Registrar::parseFile(string file){
   ifstream readFile;
   readFile.open(file, ios::in);
   readFile >> numAllWindows;
-  //cout << "num windows: " << numAllWindows << endl;
-  //cout << totalWindows << endl;
   windowList = new Window*[numAllWindows];
   for(int i = 0; i < numAllWindows; ++i){
     Window* w = new Window();
-    //Student* tempStud = new Student();    //intitalize default students to fill array
     windowList[i] = w;
   }
-
-  //while(!readFile.eof()){
-    //read entire file and create all students and add to queue
     readFile >> clockTick;
-    //cout << "ct: " << clockTick << endl;
     int numStudents;
     readFile >> numStudents;
-    //cout << "num students: " << numStudents << endl;
     for(int i = 0; i < numStudents; ++i){
       int timeSNeed =  0;
       readFile >> timeSNeed;
-      //cout << "time s need: " << timeSNeed << endl;
-      //creates a student object
       Student* s = new Student(clockTick, timeSNeed);
-      //s->printStudent();
-      myQueue->enqueue(s);
+      myQueue.enqueue(s);
     }
-  //}
-  //myQueue->printQueue();
   return true;
 }
 
 //returns t/f is windows are empty
 bool Registrar::allWindowsEmpty(){
   int allAreEmpty = 0;
-  //cout << sizeOfWindowList();
   for(int i = 0; i < sizeOfWindowList(); ++i){
     if(windowList[i]->currStudent->m_arriveTime == -1){
       allAreEmpty++;
     }
   }
   if(allAreEmpty == sizeOfWindowList()){
-    //cout << "-------" << endl;
     return true;
   }else{
-    //cout << "-------" << endl;
     return false;
   }
 }
@@ -82,16 +64,12 @@ void Registrar::updateAllIdleTime(){
   }
 }
 
+//updates wait times of student in line
 void Registrar::updateWaitTime(){
-  // cout << "size of q " << myQueue->getSize() << endl;
-  if(!myQueue->isEmpty()){
-    cout << "print q" << endl;
-    myQueue->printQueue();
-    cout << "not empty!!!!!!!!!!!!!: " << endl;
-    ListNode<Student*> *curr = myQueue->front;
+  if(!myQueue.isEmpty()){
+    ListNode<Student*> *curr = myQueue.front;
     while(curr != NULL){
       curr->data->m_waitTime += 1;
-      cout << "wait time: ****************" << curr->data->m_waitTime << endl;
       curr = curr->next;
     }
   }
@@ -109,25 +87,80 @@ double Registrar::mean(){
   }else{
     while(curr != NULL){
       sum += curr->data;
+      //if student has a wait time of 0 --> don't count the studnet when averaging the mean
+      if(curr->data != 0){
+        counter++;
+      }
       curr = curr->next;
-      counter++;
     }
   }
-  meanNum = sum / counter;
+  if(sum == 0 && counter== 0){
+    meanNum = 0;
+  }else{
+    meanNum = sum / counter;
+  }
   return meanNum;
 }
 
+//method to calculate median
 int Registrar::median(){
+  ListNode<int> *curr = waitTimesList->front;
+  int numStudentsInLine = 0;
+  int median = 0;
 
+  //loop to find number of elements in list so i can declare array
+  while(curr != NULL){
+    numStudentsInLine++;
+    curr = curr->next;
+  }
+
+  //copy over elements from list so i can sort array and find median
+  waitTimeArr = new int[numStudentsInLine];
+  curr = waitTimesList->front;
+  for(int i = 0; i <numStudentsInLine; ++i){
+    waitTimeArr[i] = curr->data;
+    curr = curr->next;
+  }
+
+  //sort() method was found in C++ STL
+  int n = sizeof(waitTimeArr) / sizeof(waitTimeArr[0]);
+  sort(waitTimeArr, waitTimeArr + n);
+
+  //if array is odd
+  if(numStudentsInLine % 2 == 1){
+    median = waitTimeArr[numStudentsInLine/2];
+  }else{     //if array is even --> average two numbers
+    median = (waitTimeArr[numStudentsInLine/2] + waitTimeArr[(numStudentsInLine/2) - 1])/2;
+  }
+  return median;
 }
 
+//find longest student time
 int Registrar::longestStudentTime(){
-
+  int longestTime = 0;
+  ListNode<int> *curr = waitTimesList->front;
+  while(curr!=NULL){
+    if(curr->data > longestTime){
+      longestTime = curr->data;
+    }
+    curr = curr->next;
+  }
+  return longestTime;
 }
 
+//find number of students who waited more than 10 minutes
 int Registrar::numStudOverTen(){
-
+  int over10 = 0;
+  ListNode<int> *curr = waitTimesList->front;
+  while(curr != NULL){
+    if(curr->data > 10){
+      over10++;
+    }
+    curr = curr->next;
+  }
+  return over10;
 }
+
 //calculates mean window idle time
 double Registrar::meanIdle(){
   double meanNum = 0;
@@ -137,19 +170,17 @@ double Registrar::meanIdle(){
   for(int i = 0; i < sizeOfWindowList(); ++i){
     sum += windowList[i]->idleTime;
   }
-
   meanNum = sum/counter;
   return meanNum;
 }
 
 //calculates longest window time
-int Registrar::longestWindowTime(){ //not working for case 3 from slack
+int Registrar::longestWindowTime(){
   idleTimesList = new int[numAllWindows];
 
   for(int i = 0; i < numAllWindows; ++i){
     idleTimesList[i] = windowList[i]->idleTime;
   }
-
   int n = sizeof(idleTimesList) / sizeof(idleTimesList[0]);
 
   //sort() method taken from internet and from standard library
@@ -166,5 +197,4 @@ int Registrar::numWindOverFive(){
     }
   }
   return overFive;
-
 }

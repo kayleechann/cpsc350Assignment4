@@ -26,55 +26,91 @@ public:
 //default constructor
 template <typename T>
 GenQueue<T>::GenQueue(){
-  myQueue = new DoublyLinkedList<T>();
+  size = 0;
+	front = NULL;
+	back = NULL;
 }
 
 //destructor
 template <typename T>
 GenQueue<T>::~GenQueue(){
-  delete myQueue;
+  //delete myQueue;
 }
 
 //method to insert at the back of queue --> implements DoublyLinkedList's insertBack() method
 template <typename T>
 void GenQueue<T>::enqueue(T data){
-  myQueue->insertBack(data);
+  ListNode<T> *node = new ListNode<T>(data);
+		if (size == 0){
+			front = node;
+		}
+		else{
+			back->next = node;
+			node->prev = back;
+		}
+		back = node;
+		++size;
 }
 
 //method to remove from queue --> implements DoublyLinkedList's removeFront() method
 template <typename T>
 T GenQueue<T>::dequeue(){
-  myQueue->removeFront();
+  if (!isEmpty()){
+			ListNode<T> *previous = front;
+			T previousData = previous->data;
+			if (front->next == NULL){
+				front = NULL;
+			  back = NULL;
+			}
+			else{
+				front->next->prev = NULL;
+				front = front->next;
+			}
+			delete previous;
+			size--;
+			return previousData;
+		}
+		else{
+			return T();
+		}
 }
 
 //method that returns the data at the top of the queue --> implements DoublyLinkedList's peek() method
 template <typename T>
 T GenQueue<T>::getFront(){ //peek()
-  return myQueue->peek();
+  return front->data;
 }
 
 //method to return data at back of queue
 template <typename T>
 T GenQueue<T>::getBack(){
-  return myQueue->back;
+  return front->back;
 }
 
 //method to print all items in queue --> implements DoublyLinkedList's printList() method
 template <typename T>
 void GenQueue<T>::printQueue(){
-  myQueue->printList();
+  ListNode<T> *curr = front;
+  while(true) {
+    if(curr != NULL) {
+      cout << curr->data << endl;
+      curr = curr->next;
+    }else {
+      break;
+    }
+  }
 }
 
 //method to return size of queue
 template <typename T>
 unsigned int GenQueue<T>::getSize(){
-  return myQueue->getSize();
+  return size;
 }
 
 //method returns a boolean (true/false) if queue is empty
 template <typename T>
 bool GenQueue<T>::isEmpty(){
-  return myQueue->isEmpty();
+  return (size == 0);
 }
 
 //method that returns object at specified position

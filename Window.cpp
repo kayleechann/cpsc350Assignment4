@@ -23,14 +23,3 @@ bool Window::windowIsOccupied(){
 void Window::addIdleTime(){
   idleTime++;
 }
-
-//prints information about window
-void Window::printWindow(){
-  string word;
-  if(isOccupied == 1){
-    word = "yes";
-  }else{
-    word = "no";
-  }
-  cout << "idle time:  " << idleTime << "    is Occupied: " << word <<endl;
-}

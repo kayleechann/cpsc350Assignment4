@@ -22,7 +22,7 @@ bool Registrar::parseFile(string file){
   ifstream readFile;
   readFile.open(file, ios::in);
   readFile >> numAllWindows;
-  cout << "num windows: " << numAllWindows << endl;
+  //cout << "num windows: " << numAllWindows << endl;
   //cout << totalWindows << endl;
   windowList = new Window*[numAllWindows];
   for(int i = 0; i < numAllWindows; ++i){
@@ -34,16 +34,16 @@ bool Registrar::parseFile(string file){
   //while(!readFile.eof()){
     //read entire file and create all students and add to queue
     readFile >> clockTick;
-    cout << "ct: " << clockTick << endl;
+    //cout << "ct: " << clockTick << endl;
     int numStudents;
     readFile >> numStudents;
-    cout << "num students: " << numStudents << endl;
+    //cout << "num students: " << numStudents << endl;
     for(int i = 0; i < numStudents; ++i){
       int timeSNeed =  0;
       readFile >> timeSNeed;
-      cout << "time s need: " << timeSNeed << endl;
+      //cout << "time s need: " << timeSNeed << endl;
       //creates a student object
-      Student *s = new Student(clockTick, timeSNeed);
+      Student* s = new Student(clockTick, timeSNeed);
       //s->printStudent();
       myQueue->enqueue(s);
     }
@@ -82,21 +82,23 @@ void Registrar::updateAllIdleTime(){
   }
 }
 
-// void Registrar::updateWaitTime(){
-//   if(!myQueue->isEmpty()){
-//     ListNode<Student*> *curr = myQueue->front;
-//
-//     while(curr != NULL){
-//       curr->data->incWaitTime();
-//       curr = curr->next;
-//     }
-//   }
-// }
+void Registrar::updateWaitTime(){
+  // cout << "size of q " << myQueue->getSize() << endl;
+  if(!myQueue->isEmpty()){
+    cout << "print q" << endl;
+    myQueue->printQueue();
+    cout << "not empty!!!!!!!!!!!!!: " << endl;
+    ListNode<Student*> *curr = myQueue->front;
+    while(curr != NULL){
+      curr->data->m_waitTime += 1;
+      cout << "wait time: ****************" << curr->data->m_waitTime << endl;
+      curr = curr->next;
+    }
+  }
+}
 
 //calculates mean student wait time
 double Registrar::mean(){
-
-
   ListNode<int> *curr = waitTimesList->front;
   double meanNum = 0;
   double sum = 0;
@@ -113,12 +115,19 @@ double Registrar::mean(){
   }
   meanNum = sum / counter;
   return meanNum;
+}
 
-
-
+int Registrar::median(){
 
 }
 
+int Registrar::longestStudentTime(){
+
+}
+
+int Registrar::numStudOverTen(){
+
+}
 //calculates mean window idle time
 double Registrar::meanIdle(){
   double meanNum = 0;

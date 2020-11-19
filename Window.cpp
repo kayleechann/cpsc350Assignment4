@@ -32,5 +32,5 @@ void Window::printWindow(){
   }else{
     word = "no";
   }
-  cout << "idle time:  " << idleTime << "    is Occupied: " << word << endl << endl;
+  cout << "idle time:  " << idleTime << "    is Occupied: " << word <<endl;
 }

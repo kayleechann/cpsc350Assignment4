@@ -32,7 +32,6 @@ public:
   //declaring data structures
   GenQueue<Student*> *myQueue; //Queue for students to simulate a "line"
   Window* *windowList; //array of students at a window
-  //DoublyLinkedList<Window> *windowList;
   DoublyLinkedList<int> *waitTimesList; //list of studend waittimes to calculate stats
   int *idleTimesList;
   int *waitTimeArr;
